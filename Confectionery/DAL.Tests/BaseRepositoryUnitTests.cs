@@ -8,82 +8,69 @@ using DAL.Repositories.Interfaces;
 using System.Linq;
 using Moq;
 namespace DAL.Tests { 
-    class TestProductRepository : BaseRepository<Product> 
+    class TestStockRepository : BaseRepository<Stock> 
     { 
-        public TestProductRepository(DbContext context) : base(context) 
+        public TestStockRepository(DbContext context) : base(context) 
         { 
         } 
     } 
     public class BaseRepositoryUnitTests 
     {
         [Fact] 
-        public void Create_InputProductInstance_CalledAddMethodOfDBSetWithProductInstance() 
-        { // Arrange 
-            DbContextOptions opt = new DbContextOptionsBuilder<CatalogContext>().Options; 
-            var mockContext = new Mock<CatalogContext>(opt); 
-            var mockDbSet = new Mock<DbSet<Product>>(); 
-            mockContext 
-                .Setup(context => context.Set<Product>( )) 
-                .Returns(mockDbSet.Object); 
-            //EFUnitOfWork uow = new EFUnitOfWork(mockContext.Object); 
-            var repository = new TestProductRepository(mockContext.Object); 
-            Product expectedProduct = new Mock<Product>().Object; 
-           
+        public void Create_InputStockInstance_CalledAddMethodOfDBSetWithStockInstance() 
+        { 
+            // Arrange 
+            DbContextOptions opt = new DbContextOptionsBuilder<ConfectioneryContext>().Options;
+            var mockContext = new Mock<ConfectioneryContext>(opt);
+            var mockDbSet = new Mock<DbSet<Stock>>();
+            mockContext.Setup(context => context.Set<Stock>()).Returns(mockDbSet.Object);
+            var repository = new TestStockRepository(mockContext.Object);
+            Stock expectedStock = new Mock<Stock>().Object;
+
             //Act 
-            repository.Create(expectedProduct); 
-            
+            repository.Create(expectedStock);
+
             // Assert 
-            mockDbSet.Verify( 
-                dbSet => dbSet.Add( expectedProduct ), Times.Once()); 
+            mockDbSet.Verify(dbSet => dbSet.Add(expectedStock), Times.Once());
         } 
         [Fact]
         public void Delete_InputId_CalledFindAndRemoveMethodsOfDBSetWithCorrectArg() 
-        { 
+        {
             // Arrange 
-            DbContextOptions opt = new DbContextOptionsBuilder<CatalogContext>().Options; 
-            var mockContext = new Mock<CatalogContext>(opt); 
-            var mockDbSet = new Mock<DbSet<Product>>(); 
-            mockContext 
-                .Setup(context => context.Set<Product>( )) 
-                .Returns(mockDbSet.Object); 
-            //EFUnitOfWork uow = new EFUnitOfWork(mockContext.Object); 
-            //IProductRepository repository = uow.Products; 
-            var repository = new TestProductRepository(mockContext.Object); 
-            
-            Product expectedProduct = new Product() { ProductID = 1}; 
-            mockDbSet.Setup(mock => mock.Find(expectedProduct.ProductID)).Returns(expectedProduct); 
-            
+            DbContextOptions opt = new DbContextOptionsBuilder<ConfectioneryContext>().Options;
+            var mockContext = new Mock<ConfectioneryContext>(opt);
+            var mockDbSet = new Mock<DbSet<Stock>>();
+            mockContext.Setup(context => context.Set<Stock>()).Returns(mockDbSet.Object);
+            var repository = new TestStockRepository(mockContext.Object);
+
+            Stock expectedStock = new Stock() { vendor_code = 1 };
+            mockDbSet.Setup(mock => mock.Find(expectedStock.vendor_code)).Returns(expectedStock);
+
             //Act 
-            repository.Delete(expectedProduct.ProductID); 
-            
+            repository.Delete(expectedStock.vendor_code);
+
             // Assert
-            mockDbSet.Verify( 
-                dbSet => dbSet.Find( expectedProduct.ProductID ), Times.Once()); 
-            mockDbSet.Verify( 
-                dbSet => dbSet.Remove( expectedProduct ), Times.Once());
+            mockDbSet.Verify(dbSet => dbSet.Find(expectedStock.vendor_code), Times.Once());
+            mockDbSet.Verify(dbSet => dbSet.Remove(expectedStock), Times.Once());
         } 
         
         [Fact]
         public void Get_InputId_CalledFindMethodOfDBSetWithCorrectId() { 
             // Arrange 
-            DbContextOptions opt = new DbContextOptionsBuilder<CatalogContext>().Options; 
-            var mockContext = new Mock<CatalogContext>(opt); 
-            var mockDbSet = new Mock<DbSet<Product>>(); 
-            mockContext 
-                .Setup(context => context.Set<Product>( )) 
-                .Returns(mockDbSet.Object); 
-            Product expectedProduct = new Product() { ProductID = 1 }; 
-            mockDbSet.Setup(mock => mock.Find(expectedProduct.ProductID)) 
-                .Returns(expectedProduct); 
-            var repository = new TestProductRepository(mockContext.Object); 
+            DbContextOptions opt = new DbContextOptionsBuilder<ConfectioneryContext>().Options; 
+            var mockContext = new Mock<ConfectioneryContext>(opt); 
+            var mockDbSet = new Mock<DbSet<Stock>>();
+            mockContext.Setup(context => context.Set<Stock>()).Returns(mockDbSet.Object);
+            Stock expectedStock = new Stock() { vendor_code = 1 };
+            mockDbSet.Setup(mock => mock.Find(expectedStock.vendor_code)).Returns(expectedStock);
+            var repository = new TestStockRepository(mockContext.Object); 
             
             //Act 
-            var actualProduct = repository.Get(expectedProduct.ProductID); 
-            
+            var actualStock = repository.Get(expectedStock.vendor_code);
+
             // Assert 
-            mockDbSet.Verify( 
-                dbSet => dbSet.Find( 
-                    expectedProduct.ProductID ), Times.Once()); Assert.Equal(expectedProduct, actualProduct); 
+            mockDbSet.Verify(dbSet => dbSet.Find(expectedStock.vendor_code), Times.Once());
+            Assert.Equal(expectedStock, actualStock);
         } 
     }
 }
